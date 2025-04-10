@@ -26,7 +26,8 @@ public class UserServiceImpl implements UserService{
 	
 	@Override
 	public User save(UserDto userDto) {
-		User user = new User(userDto.getFirstName(),userDto.getLastName(),userDto.getEmail(),passwordEncoder.encode(userDto.getPassword()) ,userDto.getRole());
+		 String role = userDto.getRole() != null ? userDto.getRole() : "USER";
+		User user = new User(userDto.getFirstName(),userDto.getLastName(),userDto.getEmail(),passwordEncoder.encode(userDto.getPassword()) ,role);
 		userRepository.save(user);
 		return user;
 	}
@@ -66,5 +67,7 @@ public class UserServiceImpl implements UserService{
 	    return userRepository.findById(id)
 	            .orElseThrow(() -> new RuntimeException("User not found"));
 	}
+
+
 
 }

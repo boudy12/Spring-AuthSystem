@@ -36,7 +36,7 @@ public class AuthController {
 	public String saveUser(@ModelAttribute("user") UserDto userDto,Model model) {
 		userService.save(userDto);
 		model.addAttribute("message","Registration Successfuly");
-		return "register";
+		return "redirect:/login";
 	}
 	
 	@GetMapping("/login")

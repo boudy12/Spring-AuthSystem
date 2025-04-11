@@ -1,5 +1,7 @@
 package com.security.AuthSystem.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,11 +23,12 @@ public class CustomUserDetailsService implements UserDetailsService{
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = userRepository.findByEmail(username);
+		  Optional<User> optionalUser = userRepository.findByEmail(username);
 		
-		if(user == null) {
+		if(optionalUser == null) {
 			throw new UsernameNotFoundException("User Not Found");
 		}
+		User user = optionalUser.get();
 		return new CustomUserDetials(user);
 	}
 

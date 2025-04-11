@@ -10,6 +10,7 @@ import com.security.AuthSystem.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer>{
 
-	User findByEmail(String email);
+	Optional<User> findByEmail(String email);
 	List<User> findAll();
+	boolean existsByEmail(String email);
 }

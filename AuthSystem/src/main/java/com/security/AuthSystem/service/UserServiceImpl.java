@@ -1,6 +1,7 @@
 package com.security.AuthSystem.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.security.AuthSystem.Excrptions.EmailAlreadyExistsException;
 import com.security.AuthSystem.dto.UserDto;
 import com.security.AuthSystem.model.User;
 import com.security.AuthSystem.repositories.UserRepository;
@@ -26,10 +28,21 @@ public class UserServiceImpl implements UserService{
 	
 	@Override
 	public User save(UserDto userDto) {
-		 String role = userDto.getRole() != null ? userDto.getRole() : "USER";
-		User user = new User(userDto.getFirstName(),userDto.getLastName(),userDto.getEmail(),passwordEncoder.encode(userDto.getPassword()) ,role);
-		userRepository.save(user);
-		return user;
+	    Objects.requireNonNull(userDto, "User DTO cannot be null");
+	    
+	    if (userRepository.existsByEmail(userDto.getEmail())) {
+	        throw new EmailAlreadyExistsException("Email already registered: " + userDto.getEmail());
+	    }
+	    
+	    User user = new User(
+	        userDto.getFirstName(),
+	        userDto.getLastName(),
+	        userDto.getEmail(),
+	        passwordEncoder.encode(userDto.getPassword()),
+	        userDto.getRole() != null ? userDto.getRole() : "USER"
+	    );
+	    
+	    return userRepository.save(user);
 	}
 
 	@Override
@@ -68,6 +81,15 @@ public class UserServiceImpl implements UserService{
 	            .orElseThrow(() -> new RuntimeException("User not found"));
 	}
 
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 
 
 }
